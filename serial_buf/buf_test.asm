@@ -18,10 +18,7 @@ IMASK   .set    19h     ;Enable INT0 and RINT
 ********************************************************************************
 *                               VARS                                           *
 ********************************************************************************
-HEAD    .word    512
-Tail    .word    0
-Atmp    .word    511
-tmp2    .word    512
+
 
 ********************************************************************************
 *                           Main Program                                       *
@@ -45,10 +42,19 @@ LOOP
 ********************************************************************************
 *           Interrupt routine for serial port recive (Right channel)           *
 ********************************************************************************
+    .sect   "VARS"
+*           !!!Do not change order for the following vars!!!                   *
+Head    .word    512    ;HeadPtr to serial in buffer
+Sout    .word    0      ;Ptr to adr for serial out data
+    .data
+Stmp1   .word    511    ;Value to and with AC
+Stmp2   .word    512    ;Value to add to AC
+
+    .text
 RINTR                   ;Interrupt routine for serial port recive (Right)
     LDPK    0           ;Serial req DRR and DXR on page 0               PAGE = 0
-    LRLK    AR7,HEAD    ;
-    LRLK    AR5,Atmp    ;
+    LRLK    AR7,Head    ;
+    LRLK    AR5,Stmp1   ;
     LARP    AR7         ;                                                ARP = 7
     LAR     AR6,*,6     ;AR6 = Headptr                                   ARP = 6
     LAC     DRR         ;Read serial in

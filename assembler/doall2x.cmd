@@ -10,14 +10,15 @@ MEMORY
 /*	 TINT	   : origin = 01056h , length  =  02h */
 	 RINT      : origin = 01058h , length  =  02h
 /*	 SINT	   : origin = 0105Ch , length  =  02h */
-	 Prog_RAM  : origin = 01100h , length  =  09100h
+	 Prog_RAM  : origin = 01100h , length  =  06000h
 
     
     PAGE 1 :            /*DATA MEMORY*/
 	 Regs      : origin =    0h  , length  =     06h
 	 Block_B2  : origin =  060h  , length  =    020h
 	 Int_RAM   : origin = 0200h  , length  =   0600h
-	 Ext_RAM   : origin = 08100h , length  =  09100h
+     Ext_RAM1  : origin = 06000h , length  =   1000h
+	 Ext_RAM2  : origin = 07000h , length  =  08000h
 
 }
 
@@ -29,6 +30,7 @@ SECTIONS
 /*	SINT_VEC	   :  > SINT        PAGE 0 */
     .text          :  > Prog_RAM    PAGE 0
     .data          :  > Prog_RAM    PAGE 0
-    .bss           :  > Ext_RAM     PAGE 1
+    .bss           :  > Ext_RAM2    PAGE 1
+    VARS           :  > Ext_RAM1    PAGE 1
 }      
 
