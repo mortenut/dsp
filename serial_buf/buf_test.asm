@@ -1,18 +1,31 @@
-	.width 80
-IMASK	.set	19h			;Enable INT0 and RINT
-
-	.sect	"RINT_VEC"	;RINT_VEC = 1058h in linker command file
-	B    	RINTR		;Interrupt routine for serial port recive
+    .width 100          ;Page width in lst file
+    .mmregs             ;Choose reserved names for internal registers
+IMASK   .set    19h     ;Enable INT0 and RINT
 
 
-	.text
+********************************************************************************
+*                   Serial interrupt vector setup                              *
+********************************************************************************
+* Da der kommer to kanaler laves der to forskellige interrupt routiner hhv. en *
+* til den venstre og en til den højre. Første kanal der kommer er venstre så   *
+* vectoren skal sættes til venstre routine.                                    *
+********************************************************************************
+    .sect   "RINT_VEC"  ;RINT_VEC = 1058h in linker command file
+    B       RINTL       ;Interrupt routine for serial port recive
 
+
+    .text
+********************************************************************************
+*                               VARS                                           *
+********************************************************************************
 HEAD    .word    512
 Tail    .word    0
 Atmp    .word    511
 tmp2    .word    512
 
-	.mmregs				;Choose reserved names for internal registers
+********************************************************************************
+*                           Main Program                                       *
+********************************************************************************
 	LALK	IMASK		;Interrupt mask
 	SACL	IMR			;Adress for IMR
 	FORT	0			;Set serial word size to 16 bit
@@ -32,7 +45,7 @@ LOOP
 ********************************************************************************
 *           Interrupt routine for serial port recive (Right channel)           *
 ********************************************************************************
-RINTR                   ;Interrupt routine for serial port recive
+RINTR                   ;Interrupt routine for serial port recive (Right)
     LDPK    0           ;Serial req DRR and DXR on page 0               PAGE = 0
     LRLK    AR7,HEAD    ;
     LRLK    AR5,Atmp    ;
@@ -44,10 +57,6 @@ RINTR                   ;Interrupt routine for serial port recive
 ******** Update headerPtr ********
     LAC     *,0,5       ;Load LAC with *AR7                              ARP = 5
     AND     *+          ;AC & 511, AR5++
-    NOP
-    NOP
-    NOP
-    NOP
     ADD     *-,0,7      ;AC += 512, AR5--                                ARP = 7
 ******** HeadPtr save ********
     SACL    *+,0,5      ;*AR7 = AC AR7++                                 ARP = 5
@@ -62,5 +71,17 @@ RINTR                   ;Interrupt routine for serial port recive
     LAC     *           ;AC = * AR6
     SACL    DXR         ;Serial out
 ******** End RINTR ********
+    LALK    RINTL       ;Load adr for RINTL in AC
+    SACL    1059h       ;Save adr for RINTL i vec tabel
+    EINT
+    RET
+
+********************************************************************************
+*           Interrupt routine for serial port recive (Left channel)           *
+********************************************************************************
+RINTL                   ;Interrupt routine for serial port recive (Left)
+******** End RINTL ********
+    LALK    RINTR       ;Load adr for RINTR in AC
+    SACL    1059h       ;Save adr for RINTR i vec tabel
     EINT
     RET
