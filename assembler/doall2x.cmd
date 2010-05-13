@@ -16,7 +16,8 @@ MEMORY
     PAGE 1 :            /*DATA MEMORY*/
 	 Regs      : origin =    0h  , length  =     06h
 	 Block_B2  : origin =  060h  , length  =    020h
-	 Int_RAM   : origin = 0200h  , length  =   0600h
+     Block_B3   : origin = 600h   , length  =   200h
+	 /*Int_RAM   : origin = 0200h  , length  =   0600h*/
      Ext_RAM1  : origin = 06000h , length  =   1000h
 	 Ext_RAM2  : origin = 07000h , length  =  08000h
 
@@ -24,7 +25,7 @@ MEMORY
 
 SECTIONS
 {
-/*    INT_VEC        :  > INTS        PAGE 0*/
+/*    INT_VEC      :  > INTS        PAGE 0*/
 /*	TINT_VEC	   :  > TINT        PAGE 0 */
     RINT_VEC       :  > RINT        PAGE 0
 /*	SINT_VEC	   :  > SINT        PAGE 0 */
@@ -32,5 +33,6 @@ SECTIONS
     .data          :  > Prog_RAM    PAGE 0
     .bss           :  > Ext_RAM2    PAGE 1
     VARS           :  > Ext_RAM1    PAGE 1
+    TEST           :  > Block_B3    PAGE 1
 }      
 
